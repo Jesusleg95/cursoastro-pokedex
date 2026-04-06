@@ -1,8 +1,10 @@
 ---
 import type { GetStaticPaths } from "astro";
+import { Icon } from 'astro-icon/components';
 import MainLayout from "../../layouts/MainLayout.astro";
 import PokemonCard from "../../components/pokemons/PokemonCard.astro";
 import type { PokemonListResponse } from "../../interfaces/pokemon-list.response";
+import Title from '@components/shared/Title.astro';
 
 export const getStaticPaths = (async() => {
     
@@ -36,9 +38,31 @@ const audioSrc = `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pok
 ---
 <MainLayout title=`Pokedex Static | ${name.charAt(0).toUpperCase() + name.slice(1)}`>
     <section class="mt-10 pb-10 mx-10 flex flex-col justify-center items-center">
-        <div class="">
-            <a href="/" class="hover:text-blue-500">Regresar</a>
-            <h1 class="capitalize text-5xl">{name}</h1>
+        <div class="flex flex-row">
+            <div>
+                <button onclick="history.back()" class="hover:text-blue-500">
+                    Regresar
+                </button>
+                <Title>{name}</Title>
+            </div>
+
+            <button 
+                id="btn-favorite" 
+                class="ml-4 hover:animate-pulse"
+                data-name={name}
+                data-id={id}
+            > 
+                <Icon 
+                    name="heart-outline" 
+                    size={50}    
+                />
+
+                <Icon 
+                    class="hidden"
+                    name="heart-full" 
+                    size={50}    
+                />
+            </button>
         </div>
 
         <PokemonCard 
@@ -56,3 +80,24 @@ const audioSrc = `https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pok
         </audio>
     </section>
 </MainLayout>
+
+<script>
+    interface FavoritePokemon {
+        name: string;
+        id: number;
+    }
+
+    document.addEventListener('astro:page-load', () => {
+        const btnFavorite = document.querySelector('#btn-favorite') as HTMLButtonElement;
+
+        if(!btnFavorite) return;
+
+        const name = btnFavorite.dataset.name;
+        const id = btnFavorite.dataset.id;
+
+        btnFavorite.addEventListener('click', () => {
+            console.log(name, id);
+        });
+    });
+
+</script>
